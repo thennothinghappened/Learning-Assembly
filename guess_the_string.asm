@@ -1,3 +1,27 @@
+; --------------------------------------------------------------------------------------------
+; # "Guess the string!"
+;
+; This is my first assembly program!
+; 
+; It really isn't anything special but I'm pretty happy
+; to have got it working with pretty limited knowledge
+; or resources other than an instructions reference.
+; 
+; ## Issues:
+;   - I don't currently know what's wrong with pointer alignment. `ld` complains with 
+;     "disabling chained fixups because of unaligned pointers" on compile, but don't know
+;     if that's actually relevant. I've kinda had to throw `ALIGN 32` everywhere and hoped
+;     for the best. If I take those away, jumps seem to get unaligned and the CPU jumps to
+;     a misaligned spot and segfaults on garbage instructions.
+; 
+;   - Don't really know what the deal with `rel` is yet, but setting `DEFAULT REL` seems to
+;     have made it happy.
+;
+;   - I'd like to look next at actually using "functions" properly, i.e. using the stack
+;     with pushing and popping, and storing variables, rather than only working with registers
+;     for now, but that's fine for the moment I think!
+; --------------------------------------------------------------------------------------------
+
 %include "definitions.asm"
 
 ; Set that addresses are relative by default
@@ -11,6 +35,13 @@ section .text
 ALIGN 32
 _main:
 
+    ; Print the opening message
+    mov     rax, SYS_WRITE
+    mov     rdi, STDOUT
+    mov     rsi, msg_opening
+    mov     rdx, msg_opening.len
+    syscall
+
     .loop:
 
         call    input_get
@@ -20,6 +51,7 @@ _main:
 
         call    input_check
 
+        ; Check if the answer was correct (1 == correct here)
         cmp     rax, 1
         je      .exit
 
@@ -56,8 +88,8 @@ input_get:
     ; Write the opening message.
     mov     rax, SYS_WRITE
     mov     rdi, STDOUT
-    mov     rsi, opening_message
-    mov     rdx, opening_message.len
+    mov     rsi, msg_prompt
+    mov     rdx, msg_prompt.len
     syscall
 
     ; Get input
@@ -73,6 +105,7 @@ input_get:
 ALIGN 32
 input_check:
 
+    ; Probably not needed, but setting registers to 0.
     mov     rax, 0
     mov     rbx, 0
 
@@ -121,8 +154,11 @@ section .bss
 input:              resb    expected_str.len
 
 section .data
-opening_message:    db      "Enter some text!: "
-    .len:           equ     $ - opening_message
+msg_opening:        db      "Guess the text!", NEWLINE
+    .len:           equ     $ - msg_opening
+
+msg_prompt:         db      "Enter some text!: "
+    .len:           equ     $ - msg_prompt
 
 msg_wrong:          db      "Wrong. Try again: ", NEWLINE
     .len:           equ     $ - msg_wrong
