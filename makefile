@@ -1,9 +1,9 @@
 
-hello_world:
-	nasm -f macho64 hello_world.asm
-	gcc -arch x86_64 -lSystem -fno-pie -o ./hello_world.bin ./hello_world.o
+guess_the_string:
+	nasm -f macho64 guess_the_string.asm
+	gcc -arch x86_64 -lSystem -fno-pie -o ./guess_the_string.bin ./guess_the_string.o
 	echo ""
-	./hello_world.bin
+	./guess_the_string.bin
 
 clean:
 	rm ./*.o
