@@ -7,7 +7,7 @@
 ; to have got it working with pretty limited knowledge
 ; or resources other than an instructions reference.
 ; 
-; ## Issues:
+; ## Issues/Comments:
 ;   - I don't currently know what's wrong with pointer alignment. `ld` complains with 
 ;     "disabling chained fixups because of unaligned pointers" on compile, but don't know
 ;     if that's actually relevant. I've kinda had to throw `ALIGN 32` everywhere and hoped
@@ -20,6 +20,10 @@
 ;   - I'd like to look next at actually using "functions" properly, i.e. using the stack
 ;     with pushing and popping, and storing variables, rather than only working with registers
 ;     for now, but that's fine for the moment I think!
+;
+;   - I don't actually know what the syntax `$ - something` does yet to get the length of a
+;     string, I know you can do compile-time arithmatic to a degree with nasm so presumably
+;     this is some special syntax that does that, I guess.
 ; --------------------------------------------------------------------------------------------
 
 %include "definitions.asm"
