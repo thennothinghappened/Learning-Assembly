@@ -28,7 +28,6 @@ BITS 64
 section .text
     global _main
 
-ALIGN 32
 _main:
 
     ; Print the opening message
@@ -77,7 +76,6 @@ _main:
         ret
 
 ; Get the input, leaving it in the `input` bss variable.
-ALIGN 32
 input_get:
 
     ; Write the opening message.
