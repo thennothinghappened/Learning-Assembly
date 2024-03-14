@@ -8,14 +8,6 @@
 ; or resources other than an instructions reference.
 ; 
 ; ## Issues/Comments:
-;   - I don't currently know what's wrong with pointer alignment. `ld` complains with 
-;     "disabling chained fixups because of unaligned pointers" on compile, but don't know
-;     if that's actually relevant. I've kinda had to throw `ALIGN 32` everywhere and hoped
-;     for the best. If I take those away, jumps seem to get unaligned and the CPU jumps to
-;     a misaligned spot and segfaults on garbage instructions.
-; 
-;   - Don't really know what the deal with `rel` is yet, but setting `DEFAULT REL` seems to
-;     have made it happy.
 ;
 ;   - I'd like to look next at actually using "functions" properly, i.e. using the stack
 ;     with pushing and popping, and storing variables, rather than only working with registers
@@ -42,7 +34,7 @@ _main:
     ; Print the opening message
     mov     rax, SYS_WRITE
     mov     rdi, STDOUT
-    mov     rsi, msg_opening
+    lea     rsi, [msg_opening]
     mov     rdx, msg_opening.len
     syscall
 
@@ -62,19 +54,18 @@ _main:
         ; Write failed message
         mov     rax, SYS_WRITE
         mov     rdi, STDOUT
-        mov     rsi, msg_wrong
+        lea     rsi, [msg_wrong]
         mov     rdx, msg_wrong.len
         syscall
 
         jmp     .loop
     
-    ALIGN 16
     .exit:
 
         ; Write success message
         mov     rax, SYS_WRITE
         mov     rdi, STDOUT
-        mov     rsi, msg_right
+        lea     rsi, [msg_right]
         mov     rdx, msg_right.len
         syscall
 
@@ -92,21 +83,20 @@ input_get:
     ; Write the opening message.
     mov     rax, SYS_WRITE
     mov     rdi, STDOUT
-    mov     rsi, msg_prompt
+    lea     rsi, [msg_prompt]
     mov     rdx, msg_prompt.len
     syscall
 
     ; Get input
     mov     rax, SYS_READ
     mov     rdi, STDIN
-    mov     rsi, input
+    lea     rsi, [input]
     mov     rdx, expected_str.len
     syscall
 
     ret
 
  ; Check user input is equal to the expected input.
-ALIGN 32
 input_check:
 
     ; Probably not needed, but setting registers to 0.
@@ -120,7 +110,6 @@ input_check:
     mov     rdx, 0
 
     ; Check bytes are correct between the two strings.
-    ALIGN 32
     .check_byte:
 
         ; Check if we're at the end
@@ -128,17 +117,17 @@ input_check:
         je      .on_right
         
         ; Load input byte
-        mov     rdx, input
+        lea     rdx, [input]
         add     rdx, rcx
         mov     al, byte [rdx]
 
         ; Load expected byte
-        mov     rdx, expected_str
+        lea     rdx, [expected_str]
         add     rdx, rcx
-        mov     bl, byte [rdx]
+        mov     ah, byte [rdx]
 
         ; Compare if they're the same
-        cmp     al, bl
+        cmp     al, ah
         jne     .on_wrong
 
         ; Increment the index
@@ -170,5 +159,5 @@ msg_wrong:          db      "Wrong. Try again: ", NEWLINE
 msg_right:          db      "Correct! bye", NEWLINE
     .len:           equ     $ - msg_right
 
-expected_str:       db      "whoa you'll never guess this one", NEWLINE
+expected_str:       db      "uwu", NEWLINE
     .len:           equ     $ - expected_str
