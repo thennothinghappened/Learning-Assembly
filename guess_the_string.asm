@@ -157,5 +157,5 @@ msg_wrong:          db      "Wrong. Try again: ", NEWLINE
 msg_right:          db      "Correct! bye", NEWLINE
     .len:           equ     $ - msg_right
 
-expected_str:       db      "uwu", NEWLINE
+expected_str:       db      "whoa some message!!!!", NEWLINE
     .len:           equ     $ - expected_str
