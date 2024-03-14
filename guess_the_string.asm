@@ -144,7 +144,7 @@ input_check:
 section .bss
 input:              resb    expected_str.len
 
-section .data
+section .rodata
 msg_opening:        db      "Guess the text!", NEWLINE
     .len:           equ     $ - msg_opening
 
